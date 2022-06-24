@@ -12,7 +12,7 @@ variable "prefix" {
 
 resource "azurerm_resource_group" "rg" {
   name     = "${var.prefix}-resources"
-  location = "West US 3"
+  location = var.location
 }
 
 resource "azurerm_virtual_network" "main" {
@@ -73,7 +73,7 @@ resource "azurerm_network_security_group" "nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "Internet"
+    source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
 }  
@@ -114,14 +114,15 @@ resource "azurerm_virtual_machine" "main" {
     managed_disk_type = "Standard_LRS"
   }
   os_profile {
-    computer_name  = "hostname"
-    admin_username = "testadmin"
-    admin_password = "Password1234!"
+    computer_name  = "${var.prefix}-hostname"
+    admin_username = var.admin_username
+    admin_password = var.admin_password
   }
   os_profile_linux_config {
     disable_password_authentication = false
   }
   tags = {
-    environment = "staging"
+    environment = "testing"
+    owner       = "${var.prefix}"
   }
 }

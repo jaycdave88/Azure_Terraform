@@ -11,6 +11,10 @@ provider "datadog"{
     app_key = "${var.datadog_app_key}"
 }
 
+variable location {}
+variable admin_username {}
+variable admin_password {}
+
 variable datadog_api_key {
   type        = string
   description = "Datadog API key. This can also be set via the DD_API_KEY environment variable"
@@ -20,7 +24,6 @@ variable datadog_app_key {
   type        = string
   description = "Datadog APP key. This can also be set via the DD_APP_KEY environment variable"
 }
-
 
 variable subscription_id {
   description = "Enter Subscription ID for provisioning resources in Azure"
@@ -37,4 +40,3 @@ variable client_secret {
 variable tenant_id {
   description = "Enter Tenant ID / Directory ID of your Azure AD"
 }
-

@@ -1,3 +1,10 @@
+terraform { 
+  required_providers {
+     azurerm = "=3.11.0"
+  }
+  required_version = "=1.1.9"
+}
+
 provider "azurerm" {
     features {} 
     subscription_id = "${var.subscription_id}"

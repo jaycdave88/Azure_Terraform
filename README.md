@@ -31,7 +31,7 @@ This repo assumes you have already created an Azure service principal. More info
 ### Windows VM:
 
 * Navigate to `windows_vm` directory.
-* In the `install-datadog.ps1` file replace `_API_KEY_HERE` with your organizatioin's Datadog API key.
+* In the `install-datadog.ps1` file replace `_API_KEY_HERE` with your organization's Datadog API key.
 * Apply the Terraform scripts: 
    * `terraform init`
    * `terraform plan`

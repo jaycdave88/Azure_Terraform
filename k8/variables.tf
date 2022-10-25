@@ -20,7 +20,6 @@ provider "azurerm" {
 
 provider "helm" {
   kubernetes {
-    # config_path = "k8/kubeconfig"
     host                   = data.azurerm_kubernetes_cluster.credentials.kube_config.0.host
     client_certificate     = base64decode(data.azurerm_kubernetes_cluster.credentials.kube_config.0.client_certificate)
     client_key             = base64decode(data.azurerm_kubernetes_cluster.credentials.kube_config.0.client_key)
@@ -30,9 +29,10 @@ provider "helm" {
 
 variable location {}
 variable cluster_name {}
-variable agent_count {}
 variable dns_prefix {}
 variable datadog_api_key {}
+variable statsd_host_port {}
+variable jmx_datadog_agent {}
 
 variable subscription_id {
   description = "Enter Subscription ID for provisioning resources in Azure"
@@ -49,3 +49,4 @@ variable client_secret {
 variable tenant_id {
   description = "Enter Tenant ID / Directory ID of your Azure AD"
 }
+

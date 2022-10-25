@@ -26,7 +26,7 @@ resource "azurerm_subnet" "subnet1" {
   address_prefixes     = ["10.1.0.0/22"]
 }
 
-resource "azurerm_kubernetes_cluster" "aks_cluster" { 
+resource "azurerm_kubernetes_cluster" "aks_cluster" {
   name                = var.cluster_name
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
@@ -34,7 +34,7 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
 
   default_node_pool {
     name       = "default"
-    node_count = 1
+    node_count = 2
     vm_size    = "Standard_D2_v2"
   }
 

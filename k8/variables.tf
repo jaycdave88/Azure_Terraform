@@ -40,12 +40,12 @@ variable subscription_id {
   description = "Enter Subscription ID for provisioning resources in Azure"
 }
 
-#ad enterprie app
+#ad enterprise app
 variable client_id {
   description = "Enter Client ID for Application creation in Azure AD"
 }
 
-#ad enterprie app
+#ad enterprise app
 variable client_secret {
   description = "Enter Client secret for Application in Azure AD"
 }

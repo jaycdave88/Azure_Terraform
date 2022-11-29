@@ -4,6 +4,7 @@ resource "helm_release" "datadog_agent" {
   repository = "https://helm.datadoghq.com"
   #leave blank for latest
   version    = ""
+  namespace  = "default"
 
   # datadog.apiKey -- Your Datadog API key
   ## ref: https://app.datadoghq.com/account/settings#agent/kubernetes
@@ -125,5 +126,5 @@ resource "helm_release" "datadog_agent" {
     value = var.jmx_datadog_agent
   }
 
-  depends_on = [azurerm_kubernetes_cluster.aks_cluster]
+  depends_on = [azurerm_kubernetes_cluster.control_plane]
 }

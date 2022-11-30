@@ -1,10 +1,15 @@
-resource "helm_release" "datadog_agent" {
-  name       = "datadog-agent"
+resource "helm_release" "datadog_agent_win" {
+  name       = "datadog-agent-win"
   chart      = "datadog"
   repository = "https://helm.datadoghq.com"
   #leave blank for latest
   version    = ""
-  namespace  = "default"
+
+  # targetSystem -- Target OS for this deployment (possible values: linux, windows)
+  set {
+    name          = "targetSystem"
+    value         = "windows"
+  }
 
   # datadog.apiKey -- Your Datadog API key
   ## ref: https://app.datadoghq.com/account/settings#agent/kubernetes
@@ -30,6 +35,13 @@ resource "helm_release" "datadog_agent" {
   set {
     name  = "datadog.dogstatsd.useHostPort"
     value = var.statsd_host_port
+  }
+
+  # datadog.dogstatsd.nonLocalTraffic -- Enable this to make each node accept non-local statsd traffic (from outside of the pod)
+  ## ref: https://github.com/DataDog/docker-dd-agent#environment-variables
+  set {
+    name  = "datadog.dogstatsd.nonLocalTraffic"
+    value = true
   }
 
   # datadog.logs.enabled -- Enables this to activate Datadog Agent log collection
@@ -69,52 +81,50 @@ resource "helm_release" "datadog_agent" {
       value = true
   }
 
-  # datadog.systemProbe.enableTCPQueueLength -- Enable the TCP queue length eBPF-based check
-  set {
-    name  = "datadog.systemProbe.enableTCPQueueLength"
-    value = true
-  }
-
-  # datadog.systemProbe.enableOOMKill -- Enable the OOM kill eBPF-based check
-  set {
-    name  = "datadog.systemProbe.enableOOMKill"
-    value = true
-  }
-
   # datadog.networkMonitoring.enabled -- Enable network performance monitoring
   set {
     name  = "datadog.networkMonitoring.enabled"
     value = true
   }
 
-  # datadog.securityAgent.compliance.enabled -- Set to true to enable Cloud Security Posture Management (CSPM)
+  # datadog.leaderElection -- Enables leader election mechanism for event collection
   set {
-    name  = "datadog.securityAgent.compliance.enabled"
-    value = true
+    name  = "datadog.leaderElection"
+    value = false
   }
 
-  # datadog.securityAgent.runtime.enabled -- Set to true to enable Cloud Workload Security (CWS)
+  ## This is the Datadog Cluster Agent implementation that handles cluster-wide
+  ## metrics more cleanly, separates concerns for better rbac, and implements
+  ## the external metrics API so you can autoscale HPAs based on datadog metrics
+  ## ref: https://docs.datadoghq.com/agent/kubernetes/cluster/
   set {
-    name  = "datadog.securityAgent.runtime.enabled"
-    value = true
-  }
-
-  # datadog.securityAgent.runtime.fimEnabled -- Set to true to enable Cloud Workload Security (CWS) File Integrity Monitoring
-  set {
-    name  = "datadog.securityAgent.fimEnabled.enabled"
-    value = true
-  }
-
-  # datadog.securityAgent.runtime.network.enabled -- Set to true to enable the collection of CWS network events
-  set {
-    name  = "datadog.securityAgent.network.enabled"
-    value = true
+    name    = "clusterAgent.enabled"
+    value   = false
   }
 
   # Enable the metricsProvider to be able to scale based on metrics in Datadog
   set {
-    name  = "datadog.clusterAgent.metricsProvider.enabled"
+    name  = "datadog.metricsProvider.enabled"
     value = true
+  }
+
+  # existingClusterAgent.join -- set this to true if you want the agents deployed by this chart to
+  # connect to a Cluster Agent deployed independently
+  set {
+    name  = "existingClusterAgent.join"
+    value = true
+  }
+
+  # existingClusterAgent.serviceName -- Existing service name to use for reaching the external Cluster Agent
+  set {
+    name   = "existingClusterAgent.serviceName"
+    value  = "datadog-agent-cluster-agent"
+  }
+
+  # existingClusterAgent.tokenSecretName -- Existing secret name to use for external Cluster Agent token
+  set {
+    name  = "existingClusterAgent.tokenSecretName"
+    value = "datadog-agent-cluster-agent"
   }
 
   # agents.image.tagSuffix -- Suffix to append to Agent tag
@@ -125,6 +135,4 @@ resource "helm_release" "datadog_agent" {
     name  = "agents.image.tagSuffix"
     value = var.jmx_datadog_agent
   }
-
-  depends_on = [azurerm_kubernetes_cluster.control_plane]
 }
